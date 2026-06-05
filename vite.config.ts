@@ -11,7 +11,7 @@ export default defineConfig({
     clean: true,
     format: [`esm`],
     dts: true,
-    outDir: `./dist`,
+    outDir: `./dist`
   },
   // ── Testing (Vitest) ────────────────────────────────────────────────
   test: {
@@ -20,6 +20,6 @@ export default defineConfig({
     include: ["**/*.{test,spec}.{ts,tsx}"],
     exclude: ["**/node_modules/**", "**/dist/**"],
     environment: "node",
-    passWithNoTests: true,
-  },
+    passWithNoTests: true
+  }
 });
