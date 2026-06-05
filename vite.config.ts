@@ -11,7 +11,7 @@ export default defineConfig({
     clean: true,
     format: [`esm`],
     dts: true,
-    outDir: `./dist`,
+    outDir: `./dist`
   },
   // ── Testing (Vitest) ────────────────────────────────────────────────
   test: {
@@ -28,7 +28,7 @@ export default defineConfig({
     // anything break".
     benchmark: {
       include: ["src/__benchmarks__/**/*.bench.{ts,tsx}"],
-      exclude: ["**/node_modules/**", "**/dist/**"],
-    },
-  },
+      exclude: ["**/node_modules/**", "**/dist/**"]
+    }
+  }
 });
