@@ -416,6 +416,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@saeris/configs@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@saeris/configs@npm:1.0.0"
+  peerDependencies:
+    vite-plus: "*"
+  checksum: 10/def05ad241ccff1c986debe96de278e9d1142958c1fc2c114a16636683391db8813762f7fc4c8d9a4deb4a9e59dc2e3bd2e11831417c0280cdbcfcb69423435c
+  languageName: node
+  linkType: hard
+
 "@standard-schema/spec@npm:^1.1.0":
   version: 1.1.0
   resolution: "@standard-schema/spec@npm:1.1.0"
@@ -864,6 +873,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "library-template@workspace:."
   dependencies:
+    "@saeris/configs": "npm:^1.0.0"
     "@types/node": "npm:^25.9.1"
     "@varlock/bumpy": "npm:^1.7.0"
     "@vitest/coverage-v8": "npm:^4.1.6"

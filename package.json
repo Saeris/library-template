@@ -34,12 +34,10 @@
     "build": "vp pack",
     "check": "vp check",
     "format": "vp check --fix",
-    "test": "vp test --fileParallelism",
-    "typecheck": "vp typecheck",
-    "bench": "vp test bench --run",
-    "profile": "node scripts/profile.mjs"
+    "test": "vp test --fileParallelism"
   },
   "devDependencies": {
+    "@saeris/configs": "^1.0.0",
     "@types/node": "^25.9.1",
     "@varlock/bumpy": "^1.7.0",
     "@vitest/coverage-v8": "^4.1.6",
