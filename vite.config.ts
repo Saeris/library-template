@@ -5,9 +5,16 @@ import manifest from "./package.json" with { type: "json" };
 export default defineConfig({
   lint,
   fmt,
+  // ── Tasks (Vite Task) ───────────────────────────────────────────────
+  run: {
+    tasks: {
+      build: { command: "vp pack", cache: true },
+      dev: { command: "vp pack --watch", cache: false }
+    }
+  },
   // ── Builds (tsdown) ─────────────────────────────────────────────────
   pack: {
-    entry: [manifest.exports["."].import.development],
+    entry: "src/index.ts",
     clean: true,
     format: [`esm`],
     dts: true,
@@ -16,7 +23,6 @@ export default defineConfig({
   // ── Testing (Vitest) ────────────────────────────────────────────────
   test: {
     name: manifest.name,
-    globals: true,
     include: ["**/*.{test,spec}.{ts,tsx}"],
     exclude: ["**/node_modules/**", "**/dist/**"],
     environment: "node",

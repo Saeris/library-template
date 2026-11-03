@@ -7,13 +7,15 @@ on:
 jobs:
   bumpy-check:
     name: Release Plan
+    # The template is never released, so its PRs carry no bump files.
+    if: github.repository != 'Saeris/library-template'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: voidzero-dev/setup-vp@v1
+      - uses: voidzero-dev/setup-vp@v1.22.0
         with:
           node-version: "lts"
           cache: true

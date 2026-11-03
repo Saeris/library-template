@@ -14,7 +14,7 @@ A minimal repo configured with modern JavaScript tooling to scaffold new librari
 ## 📦 Installation
 
 ```bash
-vp add library-tempalte
+vp add library-template
 ```
 
 ## 🔧 Usage
@@ -44,10 +44,10 @@ Cite any prior art here!
 
 Released under the [MIT license][license] © [Drake Costa][personal-website].
 
-[npm_badge]: https://img.shields.io/npm/v/valimock.svg?style=flat
-[npm]: https://www.npmjs.com/package/valimock
-[ci_badge]: https://github.com/Saeris/valimock/actions/workflows/ci.yml/badge.svg
-[ci]: https://github.com/Saeris/valimock/actions/workflows/ci.yml
+[npm_badge]: https://img.shields.io/npm/v/library-template.svg?style=flat
+[npm]: https://www.npmjs.com/package/library-template
+[ci_badge]: https://github.com/Saeris/library-template/actions/workflows/ci.yml/badge.svg
+[ci]: https://github.com/Saeris/library-template/actions/workflows/ci.yml
 [viteplus]: https://viteplus.dev/
 [bumpy]: https://bumpy.varlock.dev/
 [license]: ./LICENSE.md

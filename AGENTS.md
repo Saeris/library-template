@@ -34,44 +34,116 @@ Use me for: classification, drafting, summarization, extraction.
 Do NOT use me for: routing, retries, deterministic transforms.
 If code can answer, code answers.
 
-## Rule 6 — Token budgets are not advisory
-
-Per-task: 4,000 tokens. Per-session: 30,000 tokens.
-If approaching budget, summarize and start fresh.
-Surface the breach. Do not silently overrun.
-
-## Rule 7 — Surface conflicts, don't average them
+## Rule 6 — Surface conflicts, don't average them
 
 If two patterns contradict, pick one (more recent / more tested).
 Explain why. Flag the other for cleanup.
 Don't blend conflicting patterns.
 
-## Rule 8 — Read before you write
+## Rule 7 — Read before you write
 
 Before adding code, read exports, immediate callers, shared utilities.
 "Looks orthogonal" is dangerous. If unsure why code is structured a way, ask.
 
-## Rule 9 — Tests verify intent, not just behavior
+## Rule 8 — Tests verify intent, not just behavior
 
 Tests must encode WHY behavior matters, not just WHAT it does.
 A test that can't fail when business logic changes is wrong.
 
-## Rule 10 — Checkpoint after every significant step
+## Rule 9 — Checkpoint after every significant step
 
 Summarize what was done, what's verified, what's left.
 Don't continue from a state you can't describe back.
 If you lose track, stop and restate.
 
-## Rule 11 — Match the codebase's conventions, even if you disagree
+## Rule 10 — Match the codebase's conventions, even if you disagree
 
 Conformance > taste inside the codebase.
 If you genuinely think a convention is harmful, surface it. Don't fork silently.
 
-## Rule 12 — Fail loud
+## Rule 11 — Fail loud
 
 "Completed" is wrong if anything was skipped silently.
 "Tests pass" is wrong if any were skipped.
 Default to surfacing uncertainty, not hiding it.
+
+## Rule 12 — Soft-wrap markdown-format prose
+
+Do not hard-wrap lines in markdown-format text: markdown files, code comments, and commit/PR messages. Write each paragraph as a single soft-wrapped line and let the editor wrap it. Hard line breaks belong only where they are semantic (list items, headings, code blocks).
+
+# First-Time Setup
+
+This repo is a GitHub template. If `name` in `package.json` is still `library-template` and the repo is not `Saeris/library-template`, this is a fresh clone: offer to walk the user through these steps before starting other work. Delete this section once setup is finished.
+
+## 1. Rename the project
+
+Ask the user for the package name, a description, and the owner details, then replace the placeholders:
+
+- `package.json`: `name`, `description`, `keywords`, `homepage`, `repository`, `author`
+- `README.md`: title, tagline, install command, badge links, and the license line
+- `LICENSE.md` (copyright holder) and `.github/FUNDING.yml`
+- `.github/workflows/release.yml` and `.github/workflows/bumpy-check.yml`: change `github.repository != 'Saeris/library-template'` to `github.repository == '<owner>/<repo>'`. The `!=` form only stops the template itself from releasing; the `==` form also stops forks of the new library from running the release workflow.
+
+Then search the repo for `library-template`, `Saeris`, and `Drake Costa` to confirm nothing was missed.
+
+## 2. Claim the package on npm
+
+npm can't configure trusted publishing until a package exists, and the `publish` job in `release.yml` has no `NPM_TOKEN` to fall back on, so this must happen before the first version PR is merged. [fledgling](https://github.com/dmno-dev/fledgling) publishes a `0.0.0` placeholder to claim the name, then configures the trusted publisher from the `fledgling` block in `package.json`. The repo is detected from the git `origin` remote, so push the renamed project first.
+
+Claiming a name is public and effectively permanent, so show the user the plan and get their confirmation first. They must run `npm login` themselves (2FA is required) and approve the browser prompt when applying:
+
+```bash
+npx fledgling add <package> --dry-run  # show the plan, change nothing
+npm login                              # the user runs this
+npx fledgling add <package> --yes      # claim the name and configure trust
+```
+
+- Always name the package. Without a name, fledgling targets every public package in the workspace.
+- Use `npx` here, not `vp dlx`: `vp dlx` parses some flags itself instead of passing them on, and a `--dry-run` that goes missing would claim the name for real.
+- `workflow` and `environment` in the `fledgling` block must match `release.yml`. If either changes, update both and run `npx fledgling sync`.
+
+## 3. Add the `BUMPY_GH_TOKEN` secret
+
+Without this secret, the version PR that Bumpy opens won't trigger CI. The user creates a [fine-grained token](https://github.com/settings/personal-access-tokens) for this repo only, with read and write access to Contents and Pull requests, and adds it as a repository secret named `BUMPY_GH_TOKEN`.
+
+## 4. Publish to JSR (optional)
+
+Publishing to JSR as well as npm is a personal preference, so ask the user whether they want it and skip this step if not. It needs a JSR scope they belong to (created at [jsr.io/new](https://jsr.io/new)) and a full-access token from their JSR account, which is used once locally and never goes into CI.
+
+1. Add a `jsr` entry to the `fledgling` block. `runtimeCompat` is part of the JSR score and isn't inferred, so ask which runtimes the library supports. `scope` is only needed when the npm name has no scope.
+
+   ```json
+   "jsr": {
+     "scope": "<scope>",
+     "runtimeCompat": { "node": true, "deno": true, "bun": true, "browser": true, "workerd": true }
+   }
+   ```
+
+2. Show the plan, then have the user apply it with their token in `JSR_TOKEN`. This creates `jsr.json`, claims the package, and links the repo for tokenless publishing:
+
+   ```bash
+   npx fledgling jsr <package> --dry-run
+   npx fledgling jsr <package> --yes
+   ```
+
+3. Add a `publish` entry to `jsr.json`. Without one, JSR uploads every file git doesn't ignore, including `yarn.lock` and the repo's config files:
+
+   ```json
+   "publish": {
+     "include": ["src", "README.md", "LICENSE.md"],
+     "exclude": ["src/__tests__"]
+   }
+   ```
+
+4. Add these steps to the end of the `publish` job in `release.yml`, which already has the `id-token` permission JSR needs. `jsr.json` holds its own version, so it has to be set to the one Bumpy just released:
+
+   ```yaml
+   - run: node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('jsr.json','utf8'));j.version=require('./package.json').version;fs.writeFileSync('jsr.json',JSON.stringify(j,null,2))"
+
+   - run: npx jsr publish --allow-dirty
+   ```
+
+JSR publishes the TypeScript source and rejects slow types, so public exports need explicit types: run `npx jsr publish --dry-run --allow-dirty` to check. Runtime dependencies must use real version ranges in `package.json`, because JSR can't read `catalog:` specifiers.
 
 <!--VITE PLUS START-->
 
